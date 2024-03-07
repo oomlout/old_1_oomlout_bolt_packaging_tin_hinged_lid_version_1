@@ -122,7 +122,7 @@ def get_main_spacer(thing, **kwargs):
     
 
     if prepare_print:
-        shift = 25
+        shift = height_total/2
 
         #add slice # right
         p3 = copy.deepcopy(kwargs)
@@ -137,7 +137,7 @@ def get_main_spacer(thing, **kwargs):
         p3["pos"] = pos1
         p3["size"] = size
         p3["m"] = "#"
-        oobb_base.append_full(thing,**p3)
+        #oobb_base.append_full(thing,**p3)
         
         #add slice # bottom
         p3 = copy.deepcopy(kwargs)

@@ -4,8 +4,8 @@ import oobb
 import oobb_base
 
 thickness_tin = 1.5
-thickness_indent_bottom = 0.5
-thickness_bead = 2.5
+thickness_indent_bottom = 1
+thickness_bead = 3
 
 clearance_internal = 1
 
@@ -25,8 +25,8 @@ def make_scad(**kwargs):
         
         kwargs["overwrite"] = True
         
-        kwargs["modes"] = ["3dpr", "laser", "true"]
-        #kwargs["modes"] = ["3dpr"]
+        #kwargs["modes"] = ["3dpr", "laser", "true"]
+        kwargs["modes"] = ["3dpr"]
         #kwargs["modes"] = ["laser"]
 
     # default variables
@@ -84,7 +84,9 @@ def get_main_spacer(thing, **kwargs):
 
     width_total = width_start - thickness_tin
     height_total = height_start - thickness_tin
-    depth_total = depth_start - thickness_bead - thickness_indent_bottom
+    depth_total = (depth_start 
+                   - thickness_bead 
+                   - thickness_indent_bottom)
 
     #add plate
     p3 = copy.deepcopy(kwargs)

@@ -5,7 +5,7 @@ import oobb_base
 
 thickness_tin = 1.5
 thickness_indent_bottom = 1
-thickness_bead = 3
+#thickness_bead = 3
 
 clearance_internal = 1
 
@@ -48,13 +48,62 @@ def make_scad(**kwargs):
         part_default["full_shift"] = [0, 0, 0]
         part_default["full_rotations"] = [0, 0, 0]
         
+        #9x12 a5
         part = copy.deepcopy(part_default)
         p3 = copy.deepcopy(kwargs)
         #p3["thickness"] = 6
+        p3["width"] = 9
+        p3["height"] = 12
         part["kwargs"] = p3
+        width_start =  160
+        p3["width_start"] = width_start
+        height_start = 220
+        p3["height_start"] = height_start
+        depth_start = 22.5
+        p3["depth_start"] = depth_start
+        p3["thickness_bead"] = 3
+        extra = f"width_start_{width_start}_height_start_{height_start}_depth_start_{depth_start}"
+        p3["extra"] = extra
+        part["name"] = "main_spacer"
+        parts.append(part)
+        
+        #10x14 a5
+        part = copy.deepcopy(part_default)
+        p3 = copy.deepcopy(kwargs)
+        #p3["thickness"] = 6
+        p3["width"] = 10
+        p3["height"] = 14
+        part["kwargs"] = p3
+        width_start =  160
+        p3["width_start"] = width_start
+        height_start = 220
+        p3["height_start"] = height_start
+        depth_start = 22.5
+        p3["depth_start"] = depth_start        
+        p3["thickness_bead"] = 3
+        extra = f"width_start_{width_start}_height_start_{height_start}_depth_start_{depth_start}"
+        p3["extra"] = extra
         part["name"] = "main_spacer"
         parts.append(part)
 
+        #10x14 smaller
+        part = copy.deepcopy(part_default)
+        p3 = copy.deepcopy(kwargs)
+        #p3["thickness"] = 6
+        p3["width"] = 8
+        p3["height"] = 10
+        part["kwargs"] = p3
+        width_start =  128
+        p3["width_start"] = width_start
+        height_start = 168
+        p3["height_start"] = height_start
+        depth_start = 18.5       
+        p3["depth_start"] = depth_start        
+        p3["thickness_bead"] = 2 
+        extra = f"width_start_{width_start}_height_start_{height_start}_depth_start_{depth_start}"
+        p3["extra"] = extra
+        part["name"] = "main_spacer"
+        parts.append(part)
         
     #make the parts
     if True:
@@ -75,12 +124,13 @@ def get_main_spacer(thing, **kwargs):
     pos = kwargs.get("pos", [0, 0, 0])
     #pos = copy.deepcopy(pos)
     #pos[2] += -20
+    width = kwargs.get("width", None)
+    height = kwargs.get("height", None)
+    width_start =  kwargs.get("width_start", None)
+    height_start = kwargs.get("height_start", None)
+    depth_start = kwargs.get("depth_start", None)
 
-    width_start =  160
-
-    height_start = 220
-
-    depth_start = 22.5
+    thickness_bead = kwargs.get("thickness_bead", None)
 
     width_total = width_start - thickness_tin
     height_total = height_start - thickness_tin
@@ -108,8 +158,8 @@ def get_main_spacer(thing, **kwargs):
     p3 = copy.deepcopy(kwargs)
     p3["type"] = "n"
     p3["shape"] = f"rounded_rectangle"    
-    w = 9 * 15 + clearance_internal
-    h = 12 * 15 + clearance_internal
+    w = width * 15 + clearance_internal
+    h = height * 15 + clearance_internal
     d = depth_total
     size = [w, h, d]
     p3["size"] = size

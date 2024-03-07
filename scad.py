@@ -3,6 +3,12 @@ import opsc
 import oobb
 import oobb_base
 
+thickness_tin = 1.5
+thickness_indent_bottom = 0.5
+thickness_bead = 2.5
+
+clearance_internal = 1
+
 def main(**kwargs):
     make_scad(**kwargs)
 
@@ -11,24 +17,24 @@ def make_scad(**kwargs):
 
     # save_type variables
     if True:
-        #filter = ""
-        filter = "test"
+        filter = ""
+        #filter = "test"
 
         #kwargs["save_type"] = "none"
         kwargs["save_type"] = "all"
         
         kwargs["overwrite"] = True
         
-        kwargs["modes"] = ["3dpr", "laser", "true"]
-        #kwargs["modes"] = ["3dpr"]
+        #kwargs["modes"] = ["3dpr", "laser", "true"]
+        kwargs["modes"] = ["3dpr"]
         #kwargs["modes"] = ["laser"]
 
     # default variables
     if True:
         kwargs["size"] = "oobb"
-        kwargs["width"] = 12
-        kwargs["height"] = 12
-        kwargs["thickness"] = 6
+        kwargs["width"] = 1
+        kwargs["height"] = 1
+        kwargs["thickness"] = 1
 
     # project_variables
     if True:
@@ -46,7 +52,7 @@ def make_scad(**kwargs):
         p3 = copy.deepcopy(kwargs)
         #p3["thickness"] = 6
         part["kwargs"] = p3
-        part["name"] = "base"
+        part["name"] = "main_spacer"
         parts.append(part)
 
         
@@ -61,57 +67,92 @@ def make_scad(**kwargs):
             else:
                 print(f"skipping {part['name']}")
 
-def get_base(thing, **kwargs):
+def get_main_spacer(thing, **kwargs):
 
     depth = kwargs.get("thickness", 4)
-    prepare_print = kwargs.get("prepare_print", False)
+    prepare_print = kwargs.get("prepare_print", True)
 
     pos = kwargs.get("pos", [0, 0, 0])
     #pos = copy.deepcopy(pos)
     #pos[2] += -20
 
+    width_start =  160
+
+    height_start = 220
+
+    depth_start = 22.5
+
+    width_total = width_start - thickness_tin
+    height_total = height_start - thickness_tin
+    depth_total = depth_start - thickness_bead - thickness_indent_bottom
+
     #add plate
     p3 = copy.deepcopy(kwargs)
     p3["type"] = "p"
-    p3["shape"] = f"oobb_plate"    
-    p3["depth"] = depth
+    p3["shape"] = f"rounded_rectangle"    
+    w = width_total
+    h = height_total
+    d = depth_total
+    size = [w, h, d]
+    p3["size"] = size
     #p3["m"] = "#"
     pos1 = copy.deepcopy(pos)         
     p3["pos"] = pos1
+    rad = 11 - thickness_tin / 2
+    p3["radius"] = rad
     oobb_base.append_full(thing,**p3)
-    #add holes
+    
+    #add cutout
     p3 = copy.deepcopy(kwargs)
-    p3["type"] = "p"
-    p3["shape"] = f"oobb_holes"
-    p3["both_holes"] = True  
-    p3["depth"] = depth
-    p3["holes"] = "perimeter"
+    p3["type"] = "n"
+    p3["shape"] = f"rounded_rectangle"    
+    w = 9 * 15 + clearance_internal
+    h = 12 * 15 + clearance_internal
+    d = depth_total
+    size = [w, h, d]
+    p3["size"] = size
     #p3["m"] = "#"
     pos1 = copy.deepcopy(pos)         
     p3["pos"] = pos1
+    rad = 5 + clearance_internal / 2
+    p3["radius"] = rad
     oobb_base.append_full(thing,**p3)
+    
 
     if prepare_print:
-        #put into a rotation object
-        components_second = copy.deepcopy(thing["components"])
-        return_value_2 = {}
-        return_value_2["type"]  = "rotation"
-        return_value_2["typetype"]  = "p"
-        pos1 = copy.deepcopy(pos)
-        pos1[0] += 50
-        return_value_2["pos"] = pos1
-        return_value_2["rot"] = [180,0,0]
-        return_value_2["objects"] = components_second
-        
-        thing["components"].append(return_value_2)
+        shift = 25
 
-    
-        #add slice # top
+        #add slice # right
         p3 = copy.deepcopy(kwargs)
         p3["type"] = "n"
-        p3["shape"] = f"oobb_slice"
-        #p3["m"] = "#"
+        p3["shape"] = f"oobb_cube"
+        w = width_total
+        h = height_total
+        d = depth_total
+        size = [w, h, d]
+        pos1 = copy.deepcopy(pos)
+        pos1[0] += shift
+        p3["pos"] = pos1
+        p3["size"] = size
+        p3["m"] = "#"
         oobb_base.append_full(thing,**p3)
+        
+        #add slice # bottom
+        p3 = copy.deepcopy(kwargs)
+        p3["type"] = "n"
+        p3["shape"] = f"oobb_cube"
+        w = width_total
+        h = height_total
+        d = depth_total
+        size = [w, h, d]
+        pos1 = copy.deepcopy(pos)
+        pos1[1] += -shift
+        p3["pos"] = pos1
+        p3["size"] = size
+        p3["m"] = "#"
+        oobb_base.append_full(thing,**p3)
+
+        
     
 ###### utilities
 

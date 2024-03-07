@@ -1,0 +1,6 @@
+project_id: oomlout_bolt_packaging_tin_hinged_lid_version_1
+project_name: Oomlout Bolt Packaging Tin Hinged Lid Version 1
+project_repo: https://github.com/oomlout/oomlout_bolt_packaging_tin_hinged_lid_version_1
+production_format:
+  oolc_1:
+    file_location: source_files/oolc_1.cdr

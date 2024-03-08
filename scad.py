@@ -97,7 +97,7 @@ def make_scad(**kwargs):
         p3["width_start"] = width_start
         height_start = 168 + 2.5
         p3["height_start"] = height_start
-        depth_start = 18.5 + 1.5       
+        depth_start = 18.5 + 0.5       
         p3["depth_start"] = depth_start        
         p3["thickness_bead"] = 2 
         extra = f"width_start_{width_start}_height_start_{height_start}_depth_start_{depth_start}"

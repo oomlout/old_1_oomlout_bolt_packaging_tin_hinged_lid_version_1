@@ -142,6 +142,8 @@ def get_main_spacer(thing, **kwargs):
     depth_total = (depth_start 
                    - thickness_bead 
                    - clearance_depth_extra)
+    depth_total_bead_buldge_clearance = depth_total - thickness_bead / 2
+    depth_total_to_bead_top = depth_total + thickness_bead
 
     #add plate #inset to avoide bottom bend
     p3 = copy.deepcopy(kwargs)
@@ -149,17 +151,17 @@ def get_main_spacer(thing, **kwargs):
     p3["shape"] = f"rounded_rectangle"    
     w = width_total - diameter_bottom_bend
     h = height_total - diameter_bottom_bend
-    d = depth_total 
+    d = depth_total_bead_buldge_clearance 
     size = [w, h, d]
     p3["size"] = size
     #p3["m"] = "#"
     pos1 = copy.deepcopy(pos)         
     p3["pos"] = pos1
-    rad = 13 # too large a guess for learance    
+    rad = 10 # too large a guess for learance    
     p3["radius"] = rad
     oobb_base.append_full(thing,**p3)
 
-    #full shape without the bead clearance
+    #full shape without the bead clearance and adding extra for the bead buldge in the corners
     p4 = copy.deepcopy(p3)
     p4["size"][0] += diameter_bottom_bend
     p4["size"][1] += diameter_bottom_bend
@@ -172,11 +174,42 @@ def get_main_spacer(thing, **kwargs):
     p4 = copy.deepcopy(p3)
     p4["size"][0] += - thickness_bead
     p4["size"][1] += - thickness_bead
-    p4["size"][2] += thickness_bead
+    p4["size"][2] = depth_total_to_bead_top
     p4["pos"][2] += 0
+    rad = 8
+    p4["radius"] = rad
     #p4["m"] = "#"
     oobb_base.append_full(thing,**p4)
 
+
+    #add cubes to snuck the height beyond the corner
+    corner_radius_clearance = 15
+    p3 = copy.deepcopy(kwargs)
+    p3["type"] = "p"
+    p3["shape"] = f"oobb_cube"
+    w = width_total - corner_radius_clearance * 2
+    h = height_total
+    d = depth_total - diameter_bottom_bend
+    size = [w, h, d]
+    p3["size"] = size
+    #p3["m"] = "#"
+    pos1 = copy.deepcopy(pos)
+    pos1[2] += diameter_bottom_bend
+    p3["pos"] = pos1
+    oobb_base.append_full(thing,**p3)
+
+    p4 = copy.deepcopy(p3)
+    w = width_total
+    h = height_total  - corner_radius_clearance * 2
+    size = [w, h, d]
+    p4["size"] = size
+    #p4["m"] = "#"
+    oobb_base.append_full(thing,**p4)
+    
+
+
+
+    
 
     #add cutout
     p3 = copy.deepcopy(kwargs)
@@ -196,7 +229,7 @@ def get_main_spacer(thing, **kwargs):
     
 
     if prepare_print:
-        shift = height_total/2
+        shift = width_total/7
 
         #add slice # right
         p3 = copy.deepcopy(kwargs)
@@ -210,9 +243,10 @@ def get_main_spacer(thing, **kwargs):
         pos1[0] += shift
         p3["pos"] = pos1
         p3["size"] = size
-        p3["m"] = "#"
-        #oobb_base.append_full(thing,**p3)
+        #p3["m"] = "#"
+        oobb_base.append_full(thing,**p3)
         
+        shift = height_total/8
         #add slice # bottom
         p3 = copy.deepcopy(kwargs)
         p3["type"] = "n"

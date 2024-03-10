@@ -133,8 +133,8 @@ def get_main_spacer(thing, **kwargs):
     thickness_tin = kwargs.get("thickness_tin", None)
     diameter_bottom_bend = kwargs.get("diameter_bottom_bend", None)
 
-    clearance_width_extra = kwargs.get("clearance_width_extra", 0)    
-    clearance_height_extra = kwargs.get("clearance_height_extra", 0)
+    clearance_width_extra = kwargs.get("clearance_width_extra", 1)    
+    clearance_height_extra = kwargs.get("clearance_height_extra", 1)
     clearance_depth_extra = kwargs.get("clearance_depth_extra", 0.5)
 
     width_total = width_start - thickness_tin - clearance_width_extra
@@ -231,7 +231,7 @@ def get_main_spacer(thing, **kwargs):
     
 
     if prepare_print:
-        shift = width_total/7
+        shift = width_total/2
 
         #add slice # right
         p3 = copy.deepcopy(kwargs)
@@ -246,9 +246,9 @@ def get_main_spacer(thing, **kwargs):
         p3["pos"] = pos1
         p3["size"] = size
         #p3["m"] = "#"
-        oobb_base.append_full(thing,**p3)
+        #oobb_base.append_full(thing,**p3)
         
-        shift = height_total/8
+        shift = height_total/2
         #add slice # bottom
         p3 = copy.deepcopy(kwargs)
         p3["type"] = "n"
@@ -262,7 +262,7 @@ def get_main_spacer(thing, **kwargs):
         p3["pos"] = pos1
         p3["size"] = size
         #p3["m"] = "#"
-        #oobb_base.append_full(thing,**p3)
+        oobb_base.append_full(thing,**p3)
 
         
     

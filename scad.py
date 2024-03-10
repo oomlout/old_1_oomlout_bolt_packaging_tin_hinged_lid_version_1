@@ -168,7 +168,9 @@ def get_main_spacer(thing, **kwargs):
     p4["size"][2] += -diameter_bottom_bend
     p4["pos"][2] += diameter_bottom_bend
     #p4["m"] = "#"
-    oobb_base.append_full(thing,**p4)
+    
+    #oobb_base.append_full(thing,**p4)
+    #turned off using the bottom beam inset one only
 
     #above the bead piece
     p4 = copy.deepcopy(p3)
@@ -176,7 +178,7 @@ def get_main_spacer(thing, **kwargs):
     p4["size"][1] += - thickness_bead
     p4["size"][2] = depth_total_to_bead_top
     p4["pos"][2] += 0
-    rad = 8
+    rad = 9
     p4["radius"] = rad
     #p4["m"] = "#"
     oobb_base.append_full(thing,**p4)

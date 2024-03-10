@@ -155,7 +155,7 @@ def get_main_spacer(thing, **kwargs):
     #p3["m"] = "#"
     pos1 = copy.deepcopy(pos)         
     p3["pos"] = pos1
-    rad = 14 # too large a guess for learance    
+    rad = 13 # too large a guess for learance    
     p3["radius"] = rad
     oobb_base.append_full(thing,**p3)
 
@@ -168,13 +168,23 @@ def get_main_spacer(thing, **kwargs):
     #p4["m"] = "#"
     oobb_base.append_full(thing,**p4)
 
+    #above the bead piece
+    p4 = copy.deepcopy(p3)
+    p4["size"][0] += - thickness_bead
+    p4["size"][1] += - thickness_bead
+    p4["size"][2] += thickness_bead
+    p4["pos"][2] += 0
+    #p4["m"] = "#"
+    oobb_base.append_full(thing,**p4)
+
+
     #add cutout
     p3 = copy.deepcopy(kwargs)
     p3["type"] = "n"
     p3["shape"] = f"rounded_rectangle"    
     w = width * 15 + clearance_internal
     h = height * 15 + clearance_internal
-    d = depth_total
+    d = depth_total + thickness_bead
     size = [w, h, d]
     p3["size"] = size
     #p3["m"] = "#"
@@ -194,7 +204,7 @@ def get_main_spacer(thing, **kwargs):
         p3["shape"] = f"oobb_cube"
         w = width_total
         h = height_total
-        d = depth_total
+        d = depth_total + thickness_bead
         size = [w, h, d]
         pos1 = copy.deepcopy(pos)
         pos1[0] += shift
@@ -209,7 +219,7 @@ def get_main_spacer(thing, **kwargs):
         p3["shape"] = f"oobb_cube"
         w = width_total
         h = height_total
-        d = depth_total
+        d = depth_total + thickness_bead
         size = [w, h, d]
         pos1 = copy.deepcopy(pos)
         pos1[1] += -shift

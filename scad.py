@@ -262,7 +262,7 @@ def get_main_spacer(thing, **kwargs):
         p3["pos"] = pos1
         p3["size"] = size
         #p3["m"] = "#"
-        oobb_base.append_full(thing,**p3)
+        #oobb_base.append_full(thing,**p3)
 
         
     

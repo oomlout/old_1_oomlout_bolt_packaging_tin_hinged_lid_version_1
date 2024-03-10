@@ -133,9 +133,9 @@ def get_main_spacer(thing, **kwargs):
     thickness_tin = kwargs.get("thickness_tin", None)
     diameter_bottom_bend = kwargs.get("diameter_bottom_bend", None)
 
-    clearance_width_extra = kwargs.get("clearance_width_extra", 2)
-    clearance_height_extra = kwargs.get("clearance_height_extra", 2)
-    clearance_depth_extra = kwargs.get("clearance_depth_extra", 1)
+    clearance_width_extra = kwargs.get("clearance_width_extra", 0)    
+    clearance_height_extra = kwargs.get("clearance_height_extra", 0)
+    clearance_depth_extra = kwargs.get("clearance_depth_extra", 0.5)
 
     width_total = width_start - thickness_tin - clearance_width_extra
     height_total = height_start - thickness_tin - clearance_height_extra

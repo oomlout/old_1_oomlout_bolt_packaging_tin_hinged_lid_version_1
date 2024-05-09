@@ -20,7 +20,7 @@ def make_scad(**kwargs):
         filter = ""
         #filter = "test"
 
-        #kwargs["save_type"] = "none"
+        # kwargs["save_type"] = "none"
         kwargs["save_type"] = "all"
         
         kwargs["overwrite"] = True
@@ -48,24 +48,6 @@ def make_scad(**kwargs):
         part_default["full_shift"] = [0, 0, 0]
         part_default["full_rotations"] = [0, 0, 0]
         
-        #9x12 a5
-        part = copy.deepcopy(part_default)
-        p3 = copy.deepcopy(kwargs)
-        #p3["thickness"] = 6
-        p3["width"] = 9
-        p3["height"] = 12
-        part["kwargs"] = p3
-        width_start =  160
-        p3["width_start"] = width_start
-        height_start = 220
-        p3["height_start"] = height_start
-        depth_start = 22.5
-        p3["depth_start"] = depth_start
-        p3["thickness_bead"] = 3
-        extra = f"width_start_{width_start}_height_start_{height_start}_depth_start_{depth_start}"
-        p3["extra"] = extra
-        part["name"] = "main_spacer"
-        #parts.append(part)
         
         #10x14 a5
         part = copy.deepcopy(part_default)
@@ -73,20 +55,20 @@ def make_scad(**kwargs):
         #p3["thickness"] = 6
         p3["width"] = 10
         p3["height"] = 14
-        part["kwargs"] = p3
-        width_start =  160
-        p3["width_start"] = width_start
-        height_start = 220
-        p3["height_start"] = height_start
-        depth_start = 22.5
-        p3["depth_start"] = depth_start        
-        p3["thickness_bead"] = 3
-        extra = f"width_start_{width_start}_height_start_{height_start}_depth_start_{depth_start}"
+        part["kwargs"] = p3  
+        p3["width_start"] = 161 # external_measurement
+        p3["height_start"] = 221
+        p3["depth_start"] = 21  #internal depth measurement      
+        p3["thickness_tin"] = 0.5
+        p3["thickness_bead"] = 2
+        p3["diameter_bottom_bend"] = 1
+        extra = f"width_start_{p3["width_start"]}_height_start_{p3["height_start"]}_depth_start_{p3["depth_start"]}"
         p3["extra"] = extra
         part["name"] = "main_spacer"
-        #parts.append(part)
+        parts.append(part)
 
-        #10x14 smaller
+
+        #8x10 smaller
         part = copy.deepcopy(part_default)
         p3 = copy.deepcopy(kwargs)
         #p3["thickness"] = 6
@@ -95,9 +77,9 @@ def make_scad(**kwargs):
         part["kwargs"] = p3  
         p3["width_start"] = 129 # external_measurement
         p3["height_start"] = 169
-        p3["depth_start"] = 19        
+        p3["depth_start"] = 18 #inside depth measurement        
         p3["thickness_tin"] = 0.5
-        p3["thickness_bead"] = 2
+        p3["thickness_bead"] = 1.5 #remember to remove tin thickness
         p3["diameter_bottom_bend"] = 1
         extra = f"width_start_{p3["width_start"]}_height_start_{p3["height_start"]}_depth_start_{p3["depth_start"]}"
         p3["extra"] = extra
@@ -133,8 +115,9 @@ def get_main_spacer(thing, **kwargs):
     thickness_tin = kwargs.get("thickness_tin", None)
     diameter_bottom_bend = kwargs.get("diameter_bottom_bend", None)
 
-    clearance_width_extra = kwargs.get("clearance_width_extra", 1)    
-    clearance_height_extra = kwargs.get("clearance_height_extra", 1)
+    clearance_width_extra = kwargs.get("clearance_width_extra", 0)    
+    clearance_height_extra = kwargs.get("clearance_height_extra", 0)
+    clearance_sides_extra = kwargs.get("clearance_sides_extra", 0.5) #the distance to bring in the cube sides to allow for glue or the bead lip to press up doubled so it's on each side
     clearance_depth_extra = kwargs.get("clearance_depth_extra", 0.5)
 
     width_total = width_start - thickness_tin - clearance_width_extra
@@ -145,52 +128,53 @@ def get_main_spacer(thing, **kwargs):
     depth_total_bead_buldge_clearance = depth_total - thickness_bead / 2
     depth_total_to_bead_top = depth_total + thickness_bead
 
-    #add plate #inset to avoide bottom bend
-    p3 = copy.deepcopy(kwargs)
-    p3["type"] = "p"
-    p3["shape"] = f"rounded_rectangle"    
+    #add plate #inset to avoide bottom bend and add some corner clearance
+    extra_clearance_corner = 1.5
+    radius_inside = 9
     w = width_total - diameter_bottom_bend
     h = height_total - diameter_bottom_bend
     d = depth_total_bead_buldge_clearance 
-    size = [w, h, d]
-    p3["size"] = size
+    size_main = [w, h, d]
+    size_big = copy.deepcopy(size_main)
+    size_big[0] += - extra_clearance_corner*2
+    size_big[1] += - extra_clearance_corner*2
+    size_little = copy.deepcopy(size_main)
+    size_little[0] += - thickness_bead*2
+    size_little[1] += - thickness_bead*2
+    size_little[2] = depth_total_to_bead_top
+
+    
+    p3 = copy.deepcopy(kwargs)
+    p3["type"] = "p"
+    p3["shape"] = f"rounded_rectangle"       
+    
+    p3["size"] = size_big
     #p3["m"] = "#"
     pos1 = copy.deepcopy(pos)         
     p3["pos"] = pos1
-    rad = 10 # too large a guess for learance    
+    diff = (size_big[0]-size_little[0])/2
+    rad = radius_inside + diff
     p3["radius"] = rad
     oobb_base.append_full(thing,**p3)
 
-    #full shape without the bead clearance and adding extra for the bead buldge in the corners
-    p4 = copy.deepcopy(p3)
-    p4["size"][0] += diameter_bottom_bend
-    p4["size"][1] += diameter_bottom_bend
-    p4["size"][2] += -diameter_bottom_bend
-    p4["pos"][2] += diameter_bottom_bend
-    #p4["m"] = "#"
-    
-    #oobb_base.append_full(thing,**p4)
-    #turned off using the bottom beam inset one only
-
     #above the bead piece
     p4 = copy.deepcopy(p3)
-    p4["size"][0] += - thickness_bead
-    p4["size"][1] += - thickness_bead
-    p4["size"][2] = depth_total_to_bead_top
+    size = copy.deepcopy(size_main)    
+    p4["size"] = size_little
     p4["pos"][2] += 0
-    rad = 9
+    rad = radius_inside
     p4["radius"] = rad
     #p4["m"] = "#"
     oobb_base.append_full(thing,**p4)
 
 
     #add cubes to snuck the height beyond the corner
-    corner_radius_clearance = 15
+    corner_radius_clearance = 30
     p3 = copy.deepcopy(kwargs)
     p3["type"] = "p"
     p3["shape"] = f"oobb_cube"
     w = width_total - corner_radius_clearance * 2
-    h = height_total
+    h = height_total - clearance_sides_extra * 2
     d = depth_total - diameter_bottom_bend
     size = [w, h, d]
     p3["size"] = size
@@ -201,7 +185,7 @@ def get_main_spacer(thing, **kwargs):
     oobb_base.append_full(thing,**p3)
 
     p4 = copy.deepcopy(p3)
-    w = width_total
+    w = width_total - clearance_sides_extra * 2
     h = height_total  - corner_radius_clearance * 2
     size = [w, h, d]
     p4["size"] = size
@@ -262,7 +246,7 @@ def get_main_spacer(thing, **kwargs):
         p3["pos"] = pos1
         p3["size"] = size
         #p3["m"] = "#"
-        oobb_base.append_full(thing,**p3)
+        #oobb_base.append_full(thing,**p3)
 
         
     
